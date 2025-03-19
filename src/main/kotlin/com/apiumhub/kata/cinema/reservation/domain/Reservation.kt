@@ -5,16 +5,18 @@ data class Reservation private constructor(
     val customerId: CustomerId,
     val seats: List<SeatId>
 ) {
-    fun reserve(
-        id: ReservationId,
-        customerId: CustomerId,
-        showing: Showing,
-        seats: List<SeatId>
-    ) {
-        if ( !showing.areAvailable(seats) ) {
-            throw IllegalArgumentException("Seats are not available")
+    companion object {
+        fun create(
+            id: ReservationId,
+            customerId: CustomerId,
+            showing: Showing,
+            seats: List<SeatId>
+        ) {
+            if ( !showing.areAvailable(seats) ) {
+                throw IllegalArgumentException("Seats are not available")
+            }
+            showing.block(seats)
+            Reservation(id, customerId, seats)
         }
-        Reservation(id, customerId, seats)
-        showing.block(seats)
     }
 }
